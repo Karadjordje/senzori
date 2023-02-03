@@ -1,0 +1,18 @@
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  background: #76c2f1;
+  height: 400px;
+  max-width: 500px;
+
+  .goal {
+    display: block;
+    margin-bottom: 5px;
+  }
+
+  .btn {
+    max-width: 192px;
+  }
+}
