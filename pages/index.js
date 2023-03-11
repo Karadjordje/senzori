@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import getRandomNum from '../utils/getRandomNum';
 import TargetGoal from '../Components/TargetGoal';
-import NUMBER_OF_GOALS from '../constants/NUMBER_OF_GOALS';
+import {NUMBER_OF_GOALS, GOALS_RANGES} from '../constants/goals';
 import Result from '../Components/Result/Result';
 
 const yellow = '0xFFFF00';
@@ -26,21 +26,29 @@ const App = () => {
   const [attempts, setAttempts] = useState(0);
   const [hits, setHits] = useState(0);
 
+  const resetGoals = useCallback(() => ws.send(`-1:-1:${black}\0`), [ws]);
+  const highlightGoal = useCallback((goalIndex, color) => {
+    const goalIndices = GOALS_RANGES[goalIndex];
+    for (const [startIndex, endIndex] of goalIndices) {
+      ws.send(`${startIndex}:${endIndex}:${color}\0`);
+    }
+  }, [ws]);
+
   return (
     <>
-      {chosenGoal ? (
+      {chosenGoal !== null ? (
         <Result
-          chosenGoal={chosenGoal}
+          chosenGoal={chosenGoal + 1}
           onHit={() => {
             setAttempts(attempts + 1);
             setHits(hits + 1);
             setChosenGoal(null);
-            ws.send(`${chosenGoal}:${green}`);
+            highlightGoal(chosenGoal, green);
           }}
           onMiss={() => {
             setAttempts(attempts + 1);
             setChosenGoal(null);
-            ws.send(`${chosenGoal}:${red}`);
+            highlightGoal(chosenGoal, red);
           }}
           attempts={attempts}
           hits={hits}
@@ -54,12 +62,10 @@ const App = () => {
           hits={hits}
           currentGoal={chosenGoal}
           onHit={() => {
-            const randomNum = getRandomNum({ to: NUMBER_OF_GOALS });
-
-            // -1 is used for reset
-            ws.send(`-1:${black}`);
-            ws.send(`${randomNum}:${yellow}`);
-            setChosenGoal(randomNum);
+            const goalIndex = getRandomNum({ to: NUMBER_OF_GOALS });
+            resetGoals();
+            highlightGoal(goalIndex, yellow);
+            setChosenGoal(goalIndex);
           }}
         />
       )}
