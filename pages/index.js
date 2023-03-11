@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import getRandomNum from '../utils/getRandomNum';
 import TargetGoal from '../Components/TargetGoal';
 import {NUMBER_OF_GOALS, GOALS_RANGES} from '../constants/goals';
@@ -50,17 +50,11 @@ const App = () => {
             setChosenGoal(null);
             highlightGoal(chosenGoal, red);
           }}
-          attempts={attempts}
-          hits={hits}
-          setAttempts={setAttempts}
-          setHits={setHits}
-          setChosenGoal={setChosenGoal}
         />
       ) : (
         <TargetGoal
           attempts={attempts}
           hits={hits}
-          currentGoal={chosenGoal}
           onHit={() => {
             const goalIndex = getRandomNum({ to: NUMBER_OF_GOALS });
             resetGoals();
